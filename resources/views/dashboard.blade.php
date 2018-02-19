@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-  <h3 class="text-center">Posts</h3>
+  <h3 class="text-center">Dashboard</h3>
+  {{-- @if (session('status'))
+      <div class="alert alert-success">
+          {{ session('status') }}
+      </div>
+  @endif
+
+  You are logged in! --}}
+
   @if(count($posts) > 0)
       <div class="row mb-2">
         @foreach ($posts as $post)
@@ -21,7 +29,6 @@
          </div>
        @endforeach
      </div>
-     {{$posts->links()}}
   @else
     <p>No Post Found!</p>
   @endif

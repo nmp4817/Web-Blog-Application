@@ -7,14 +7,14 @@
     <div class="row">
       <div class="col-md-12 blog-main">
         <h3 class="pb-3 mb-4 font-italic border-bottom">
-          From the Firehose
+          From the {{$post->type}}
         </h3>
 
         <div class="blog-post">
           <h2 class="blog-post-title">{{$post->title}}</h2>
-          <p class="blog-post-meta">{{$post->created_at}} by <a href="#">Mark</a></p>
+          <p class="blog-post-meta">{{$post->created_at}} by {{$post->user->name}}</p>
 
-          <p>This blog post shows a few different types of content that's supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>
+          <p>{{$post->description}}</p>
           <hr>
           <p>{!! $post->body !!}</p>
           {{-- <h2>Heading</h2>

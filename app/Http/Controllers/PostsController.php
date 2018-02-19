@@ -43,13 +43,16 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['title' => 'required','body' => 'required']);
+      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required']);
 
-        //New Post
-        $post = new PostModel;
-        $post->title = $request->input('title');
-        $post->body = $request->input('body');
-        $post->save();
+      //New Post
+      $post = new PostModel;
+      $post->title = $request->input('title');
+      $post->description = $request->input('description');
+      $post->type = $request->input('type');
+      $post->body = $request->input('body');
+      $post->user_id = auth()->user()->id;
+      $post->save();
 
         return redirect('/posts')->with('success','Post Created');
     }
@@ -87,11 +90,13 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-      $this->validate($request, ['title' => 'required','body' => 'required']);
+      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required']);
 
-      //New Post
+      //Edit Post
       $post = PostModel::find($id);
       $post->title = $request->input('title');
+      $post->description = $request->input('description');
+      $post->type = $request->input('type');
       $post->body = $request->input('body');
       $post->save();
 
