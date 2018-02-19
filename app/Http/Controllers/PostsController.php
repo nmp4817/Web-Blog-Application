@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\PostModel;
+use DB;
 
 class PostsController extends Controller
 {
@@ -13,7 +15,14 @@ class PostsController extends Controller
      */
     public function index()
     {
-        //
+      // $posts = PostModel::all();
+      // $posts = PostModel::orderBy('id','desc')->get();
+      // $posts = PostModel::orderBy('id','desc')->take(1)->get();
+      // $posts = PostModel::where('title', "Second Post")->get();
+      // $posts = DB::select('SELECT * FROM post_models');
+
+      $posts = PostModel::orderBy('created_at','desc')->paginate(2);
+      return view('posts.index')->with('posts', $posts);
     }
 
     /**
@@ -23,7 +32,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -34,7 +43,15 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, ['title' => 'required','body' => 'required']);
+
+        //New Post
+        $post = new PostModel;
+        $post->title = $request->input('title');
+        $post->body = $request->input('body');
+        $post->save();
+
+        return redirect('/posts')->with('success','Post Created');
     }
 
     /**
@@ -45,7 +62,8 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        //
+      $post = PostModel::find($id);
+      return view('posts.show')->with('post', $post);
     }
 
     /**
@@ -56,7 +74,8 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        //
+      $post = PostModel::find($id);
+      return view('posts.edit')->with('post', $post);
     }
 
     /**
@@ -68,7 +87,15 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $this->validate($request, ['title' => 'required','body' => 'required']);
+
+      //New Post
+      $post = PostModel::find($id);
+      $post->title = $request->input('title');
+      $post->body = $request->input('body');
+      $post->save();
+
+      return redirect('/posts')->with('success','Post Updated');
     }
 
     /**
@@ -79,6 +106,9 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = PostModel::find($id);
+        $post->delete();
+
+        return redirect('/posts')->with('success','Post Deleted');
     }
 }
