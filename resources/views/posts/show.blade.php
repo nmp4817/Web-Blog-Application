@@ -11,6 +11,7 @@
         </h3>
 
         <div class="blog-post">
+          <img class="card-img-right flex-auto d-none d-md-block" src="/storage/cover_images/{{$post->cover_image}}" alt="Card image cap">
           <h2 class="blog-post-title">{{$post->title}}</h2>
           <p class="blog-post-meta">{{$post->created_at}} by {{$post->user->name}}</p>
 
@@ -65,14 +66,17 @@
           <p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
         </div><!-- /.blog-post --> --}}
 
-        <nav class="blog-pagination">
-          <a class="btn btn-primary" href="/posts/{{$post->id}}/edit">Edit</a>
-          {!!Form::open(['action' => ['PostsController@destroy', $post->id], 'method' => 'POST', 'class' => 'float-right'])!!}
-          {{Form::hidden('_method','DELETE')}}
-          {{Form::submit('Delete', ['class' => 'btn btn-danger'])}}
-          {!!Form::close()!!}
-        </nav>
-
+        @if(!Auth::guest())
+          @if(Auth::user()->id  == $post->user_id)
+            <nav class="blog-pagination">
+              <a class="btn btn-primary" href="/posts/{{$post->id}}/edit">Edit</a>
+              {!!Form::open(['action' => ['PostsController@destroy', $post->id], 'method' => 'POST', 'class' => 'float-right'])!!}
+              {{Form::hidden('_method','DELETE')}}
+              {{Form::submit('Delete', ['class' => 'btn btn-danger'])}}
+              {!!Form::close()!!}
+            </nav>
+          @endif
+        @endif
       </div><!-- /.blog-main -->
 
       {{-- <aside class="col-md-4 blog-sidebar">

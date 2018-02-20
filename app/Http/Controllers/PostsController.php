@@ -3,11 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\PostModel;
 use DB;
 
 class PostsController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index','show']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,7 +53,23 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required']);
+      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required','cover_image' => 'image|nullable|max:1999']);
+
+      //File upload
+      if ( $request->hasFile('cover_image') ) {
+        // Get filename with the extension
+          $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+          // Get just filename
+          $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+          // Get just ext
+          $extension = $request->file('cover_image')->getClientOriginalExtension();
+          // Filename to store
+          $fileNameToStore= $filename.'_'.time().'.'.$extension;
+          // Upload Image
+          $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+      } else {
+          $fileNameToStore = 'noimage.jpg';
+      }
 
       //New Post
       $post = new PostModel;
@@ -51,10 +77,11 @@ class PostsController extends Controller
       $post->description = $request->input('description');
       $post->type = $request->input('type');
       $post->body = $request->input('body');
+      $post->cover_image = $fileNameToStore;
       $post->user_id = auth()->user()->id;
       $post->save();
 
-        return redirect('/posts')->with('success','Post Created');
+        return redirect('/posts')->with('success','Blog Created');
     }
 
     /**
@@ -78,6 +105,12 @@ class PostsController extends Controller
     public function edit($id)
     {
       $post = PostModel::find($id);
+
+      //check user
+      if (auth()->user()->id !== $post->user_id) {
+        return redirect('/posts')->with('error','Unauthorized Page');
+      }
+
       return view('posts.edit')->with('post', $post);
     }
 
@@ -90,7 +123,21 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required']);
+      $this->validate($request, ['title' => 'required','description' => 'required','type' => 'required','body' => 'required','cover_image' => 'image|nullable|max:1999']);
+
+      //File upload
+      if ( $request->hasFile('cover_image') ) {
+        // Get filename with the extension
+          $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+          // Get just filename
+          $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+          // Get just ext
+          $extension = $request->file('cover_image')->getClientOriginalExtension();
+          // Filename to store
+          $fileNameToStore= $filename.'_'.time().'.'.$extension;
+          // Upload Image
+          $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+      }
 
       //Edit Post
       $post = PostModel::find($id);
@@ -98,9 +145,12 @@ class PostsController extends Controller
       $post->description = $request->input('description');
       $post->type = $request->input('type');
       $post->body = $request->input('body');
+      if ( $request->hasFile('cover_image') ) {
+        $post->cover_image = $fileNameToStore;
+      }
       $post->save();
 
-      return redirect('/posts')->with('success','Post Updated');
+      return redirect('/posts')->with('success','Blog Updated');
     }
 
     /**
@@ -112,8 +162,16 @@ class PostsController extends Controller
     public function destroy($id)
     {
         $post = PostModel::find($id);
-        $post->delete();
+        //check user
+        if (auth()->user()->id !== $post->user_id) {
+          return redirect('/posts')->with('error','Unauthorized Page');
+        }
 
-        return redirect('/posts')->with('success','Post Deleted');
+        if ( $post->cover_image != 'noimage.jpg' ) {
+          Storage::delete('public/cover_images/'.$post->cover_image);
+        }
+
+        $post->delete();
+        return redirect('/posts')->with('success','Blog Deleted');
     }
 }

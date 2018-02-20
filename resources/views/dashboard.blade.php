@@ -24,12 +24,12 @@
                 <p class="card-text mb-auto">{{$post->description}}</p>
                 <a href="/posts/{{$post->id}}">Continue reading</a>
               </div>
-             <img class="card-img-right flex-auto d-none d-md-block" data-src="blog_picture_b2bsocialmediaguide.jpeg" alt="Card image cap">
+             <img class="card-img-right flex-auto d-none d-md-block" src="/storage/cover_images/{{$post->cover_image}}" alt="Card image cap">
            </div>
          </div>
        @endforeach
      </div>
   @else
-    <p>No Post Found!</p>
+    <p>No Blog Found!</p>
   @endif
 @endsection

@@ -4,7 +4,7 @@
       <a class="text-muted" href="/" style="margin-right:15px;">Home</a>
       <a class="text-muted" href="/about" style="margin-right:15px;">About</a>
       <a class="text-muted" href="/posts" style="margin-right:15px;">Blogs</a>
-      <a class="text-muted" href="/posts/create">New Post</a>
+      <a class="text-muted" href="/posts/create">New Blog</a>
     </div>
     <div class="col-4 text-center">
       <a class="blog-header-logo text-dark" href="/">{{ config('app.name', 'WebBlog') }}</a>
